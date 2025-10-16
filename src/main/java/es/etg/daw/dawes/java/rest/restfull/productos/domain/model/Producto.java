@@ -10,7 +10,8 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class Producto {
-	
+
+   
 	// Atributos
 	private int id;
 	private String nombre;
