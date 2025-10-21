@@ -5,19 +5,22 @@ import org.springframework.context.annotation.Configuration;
 
 import es.etg.daw.dawes.java.rest.restfull.productos.application.service.CreateProductoService;
 import es.etg.daw.dawes.java.rest.restfull.productos.application.service.DeleteProductoService;
+import es.etg.daw.dawes.java.rest.restfull.productos.application.service.EditProductoService;
 import es.etg.daw.dawes.java.rest.restfull.productos.application.service.FindProductoService;
 import es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.CreateProductoUseCase;
 import es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.DeleteProductoUseCase;
+import es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.EditProductoUseCase;
 import es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.FindProductoUseCase;
+import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.db.repository.mock.ProductoRepositoryMockImpl;
 
 @Configuration
 public class ProductoConfig {
 
-    @Bean
+     @Bean
     public CreateProductoUseCase createProductoUseCase() {
-        return new CreateProductoUseCase();
+		//Añadimos en la llamada una instancia de nuestro MOCK.
+        return new CreateProductoUseCase(new ProductoRepositoryMockImpl());
     }
-
     @Bean
     public CreateProductoService createProductoService() {
         return new CreateProductoService(createProductoUseCase());
@@ -42,5 +45,16 @@ public class ProductoConfig {
     @Bean
     public DeleteProductoService deleteProductoService() {
         return new DeleteProductoService(deleteProductoUseCase());
+    }
+
+    @Bean  
+    public EditProductoService editProductoService(){
+        return new EditProductoService(editProductoUseCase());
+    }
+
+    @Bean
+
+    public EditProductoUseCase editProductoUseCase(){
+        return new EditProductoUseCase();
     }
 }

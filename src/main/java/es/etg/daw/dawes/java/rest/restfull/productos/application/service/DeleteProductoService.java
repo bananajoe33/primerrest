@@ -13,6 +13,6 @@ public class DeleteProductoService {
      private final DeleteProductoUseCase deleteProductoUseCase;
 
     public void delete(int id){
-
+        deleteProductoUseCase.delete(id);
     }
 }
