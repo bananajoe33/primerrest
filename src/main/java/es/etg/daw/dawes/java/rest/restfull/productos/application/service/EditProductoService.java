@@ -13,8 +13,10 @@ public class EditProductoService {
 
     private final EditProductoUseCase editProductoUseCase;
 
-    public Producto update(EditProductoCommand command){
-        return editProductoUseCase.update(command);
-    }
+  public Producto update(EditProductoCommand command){
+    return editProductoUseCase.update(command);
+}
+
+
     
 }
