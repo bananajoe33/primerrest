@@ -1,0 +1,25 @@
+package es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.categoria;
+
+import java.time.LocalDateTime;
+
+import es.etg.daw.dawes.java.rest.restfull.productos.application.command.categoria.CreateCategoriaCommand;
+import es.etg.daw.dawes.java.rest.restfull.productos.domain.model.Categoria;
+import es.etg.daw.dawes.java.rest.restfull.productos.domain.repository.CategoriaRepository;
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+public class CreateCategoriaUseCase {
+    
+    private CategoriaRepository categoriaRepository;
+
+    public Categoria create(CreateCategoriaCommand comando) {
+
+        Categoria categoria = Categoria.builder()
+                .nombre(comando.nombre()) // Gracias a @Accessors(fluent = true)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        categoriaRepository.save(categoria);
+        return categoria;
+    }
+}

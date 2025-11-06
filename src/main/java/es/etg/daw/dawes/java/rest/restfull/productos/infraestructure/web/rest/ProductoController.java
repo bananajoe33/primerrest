@@ -19,13 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.etg.daw.dawes.java.rest.restfull.productos.application.command.CreateProductoCommand;
-import es.etg.daw.dawes.java.rest.restfull.productos.application.command.EditProductoCommand;
-import es.etg.daw.dawes.java.rest.restfull.productos.application.service.CreateProductoService;
-import es.etg.daw.dawes.java.rest.restfull.productos.application.service.DeleteProductoService;
-import es.etg.daw.dawes.java.rest.restfull.productos.application.service.EditProductoService;
-import es.etg.daw.dawes.java.rest.restfull.productos.application.service.FindProductoService;
+import es.etg.daw.dawes.java.rest.restfull.productos.application.command.producto.CreateProductoCommand;
+import es.etg.daw.dawes.java.rest.restfull.productos.application.command.producto.EditProductoCommand;
+import es.etg.daw.dawes.java.rest.restfull.productos.application.service.producto.CreateProductoService;
+import es.etg.daw.dawes.java.rest.restfull.productos.application.service.producto.DeleteProductoService;
+import es.etg.daw.dawes.java.rest.restfull.productos.application.service.producto.EditProductoService;
+import es.etg.daw.dawes.java.rest.restfull.productos.application.service.producto.FindProductoService;
 import es.etg.daw.dawes.java.rest.restfull.productos.domain.model.Producto;
+import es.etg.daw.dawes.java.rest.restfull.productos.domain.model.ProductoId;
 import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.mapper.ProductoMapper;
 import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.web.dto.ProductoRequest;
 import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.web.dto.ProductoResponse;
@@ -46,20 +47,18 @@ public class ProductoController {
 
     private final EditProductoService editProductoService;
 
-
     @PostMapping //Método Post
     public ResponseEntity<ProductoResponse> createProducto(
-              // Indicamos que valide los datos de la request
+            // Indicamos que valide los datos de la request
             @Valid
-            @RequestBody 
-                ProductoRequest productoRequest) {
-        CreateProductoCommand comando = ProductoMapper.toCommand(productoRequest); 
+            @RequestBody ProductoRequest productoRequest) {
+        CreateProductoCommand comando = ProductoMapper.toCommand(productoRequest);
         Producto producto = createProductoService.createProducto(comando);
         return ResponseEntity.status(HttpStatus.CREATED).body(ProductoMapper.toResponse(producto)); //Respuesta
     }
 
-	   @GetMapping
-    public List<ProductoResponse> allProductos(){
+    @GetMapping
+    public List<ProductoResponse> allProductos() {
 
         return findProductoService.findAll()
                 .stream() //Convierte la lista en un flujo
@@ -68,21 +67,20 @@ public class ProductoController {
 
     }
 
-     @DeleteMapping("/{id}")
-    public ResponseEntity<?>  deleteProducto(@PathVariable int id) {
-        deleteProductoService.delete(id);
-        return ResponseEntity.noContent().build(); //Devpñvemos una respuesta vacía.
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProducto(@PathVariable int id) {
+        deleteProductoService.delete(new ProductoId(id)); //convertimos id en ProductoId
+        return ResponseEntity.noContent().build();
     }
 
-     @PutMapping("/{id}")
-    public ProductoResponse editProducto(@PathVariable int id, @RequestBody ProductoRequest productoRequest){
+    @PutMapping("/{id}")
+    public ProductoResponse editProducto(@PathVariable int id, @RequestBody ProductoRequest productoRequest) {
         EditProductoCommand comando = ProductoMapper.toCommand(id, productoRequest);
         Producto producto = editProductoService.update(comando);
-        return  ProductoMapper.toResponse(producto); //Respuesta
+        return ProductoMapper.toResponse(producto); //Respuesta
     }
 
-
-     // Método que captura los errores y devuelve un mapa con el campo que no cumple la validación y un mensaje de error.
+    // Método que captura los errores y devuelve un mapa con el campo que no cumple la validación y un mensaje de error.
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -95,6 +93,6 @@ public class ProductoController {
         return errors;
     }
 
-
+    
 
 }
