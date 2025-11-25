@@ -19,7 +19,7 @@ public class CreateCategoriaUseCase {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        categoriaRepository.save(categoria);
-        return categoria;
+        
+        return categoriaRepository.save(categoria);
     }
 }

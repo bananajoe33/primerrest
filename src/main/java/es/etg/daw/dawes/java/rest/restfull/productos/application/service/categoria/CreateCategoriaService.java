@@ -11,34 +11,23 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class CreateCategoriaService {
 
-
-
     private final CreateCategoriaUseCase createCategoriaUseCase;
 
-    public Categoria createCategoria(CreateCategoriaCommand comando){
+    public Categoria createCategoria(CreateCategoriaCommand comando) {
 
         Categoria categoria = createCategoriaUseCase.create(comando);
 
         return categoria;
 
     }
-    
 
+    /**
+     * private final CreateProductoUseCase createProductoUseCase;
 
-/**private final CreateProductoUseCase createProductoUseCase;
-
-	public Producto createProducto(CreateProductoCommand comando){
-		Producto producto = createProductoUseCase.create(comando);
-		return producto;
-	}
-	
-/*
- * 
- */
-
-
-
-
-
-
+     *      *public Producto createProducto(CreateProductoCommand comando){ Producto
+     * producto = createProductoUseCase.create(comando); return producto; }
+     *
+     * /*
+     *
+     */
 }

@@ -12,15 +12,25 @@ import es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.categor
 import es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.categoria.EditCategoriaUseCase;
 import es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.categoria.FindCategoriaUseCase;
 import es.etg.daw.dawes.java.rest.restfull.productos.domain.repository.CategoriaRepository;
+import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.db.jpa.repository.CategoriaEntityJpaRepository;
+import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.db.jpa.repository.CategoriaJpaRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
 public class CategoriaConfig {
-    
-    private final CategoriaRepository categoriaRepository;
+
+    // Repositorio JPA CRUD generado por Spring
+    private final CategoriaEntityJpaRepository categoriaEntityRepository;
+
+    // Adaptador que implementa CategoriaRepository
+    @Bean
+    public CategoriaRepository categoriaRepository() {
+        return new CategoriaJpaRepositoryImpl(categoriaEntityRepository);
+    }
 
     // --- Use Cases ---
+
     @Bean
     public CreateCategoriaUseCase createCategoriaUseCase(CategoriaRepository categoriaRepository) {
         return new CreateCategoriaUseCase(categoriaRepository);
@@ -42,6 +52,7 @@ public class CategoriaConfig {
     }
 
     // --- Services ---
+
     @Bean
     public CreateCategoriaService createCategoriaService(CreateCategoriaUseCase createCategoriaUseCase) {
         return new CreateCategoriaService(createCategoriaUseCase);
@@ -62,3 +73,4 @@ public class CategoriaConfig {
         return new EditCategoriaService(editCategoriaUseCase);
     }
 }
+

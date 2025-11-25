@@ -20,8 +20,8 @@ public class CreateProductoUseCase {
                                     .categoria(comando.categoriaId())
                                     .createdAt(LocalDateTime.now()).build();
 
-        productoRepository.save(producto);
-        return producto;
+        
+        return productoRepository.save(producto);
 
     }
 }

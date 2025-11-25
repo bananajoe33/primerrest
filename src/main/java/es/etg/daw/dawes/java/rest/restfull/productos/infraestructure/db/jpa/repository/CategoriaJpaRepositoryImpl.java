@@ -17,17 +17,7 @@ public class CategoriaJpaRepositoryImpl implements CategoriaRepository {
 
     @Override
     public Categoria save(Categoria c) {
-        CategoriaEntity entity;
-        if (c.getId() != null) {
-            // Update: obtener la entidad gestionada
-            entity = repository.findById(c.getId().getValue())
-                    .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
-            entity.setNombre(c.getNombre());
-            // Si hay más campos en Categoria, actualízalos aquí
-        } else {
-            // Insert: nueva entidad
-            entity = CategoriaMapper.toEntity(c);
-        }
+        CategoriaEntity entity = CategoriaMapper.toEntity(c);
         return CategoriaMapper.toDomain(repository.save(entity));
     }
 
@@ -38,19 +28,17 @@ public class CategoriaJpaRepositoryImpl implements CategoriaRepository {
 
     @Override
     public Optional<Categoria> getById(CategoriaId id) {
-        return repository.findById(id.getValue())
-                .map(CategoriaMapper::toDomain);
+        Optional<CategoriaEntity> entityOpt = repository.findById(id.getValue());
+        return entityOpt.map(CategoriaMapper::toDomain);
     }
 
     @Override
-    public void deteteById(CategoriaId id) {
-        repository.deleteById(id.getValue()); // Método con typo intencionado
+    public void deteteById(CategoriaId id) { 
+        repository.deleteById(id.getValue());
     }
 
     @Override
     public Optional<Categoria> getByName(String name) {
-        CategoriaEntity entity = repository.findByNombre(name);
-        return entity != null ? Optional.of(CategoriaMapper.toDomain(entity)) : Optional.empty();
+        throw new UnsupportedOperationException("Unimplemented method 'getByName'");
     }
-
 }
