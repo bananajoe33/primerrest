@@ -1,5 +1,6 @@
 package es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.web.dto;
 
+import es.etg.daw.dawes.java.rest.restfull.productos.domain.model.Producto;
 import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.web.validation.NombradoProducto;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -11,6 +12,13 @@ public record ProductoRequest(
                     String nombre, 
                 @Min(value = 0, message = "{producto.valid.precio.min}") 
                 @Max(value = 100, message = "{producto.valid.precio.max}")
-                    double precio) {
+                    double precio,
+                @Min(value = 1 )
+                int categoriaId
+                ) {
 
+    
+    public ProductoRequest(Producto p){
+        this(p.getNombre(), p.getPrecio(), p.getCategoria().getValue());
+    }
 }

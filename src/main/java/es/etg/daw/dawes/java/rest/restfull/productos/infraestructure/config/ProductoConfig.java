@@ -12,50 +12,64 @@ import es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.product
 import es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.producto.EditProductoUseCase;
 import es.etg.daw.dawes.java.rest.restfull.productos.application.usecase.producto.FindProductoUseCase;
 import es.etg.daw.dawes.java.rest.restfull.productos.domain.repository.ProductoRepository;
+import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.db.jpa.repository.ProductoEntityJpaRepository;
+import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.db.jpa.repository.ProductoJpaRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
 public class ProductoConfig {
 
+    // Repositorio JPA CRUD generado por Spring
+    private final ProductoEntityJpaRepository productoEntityRepository;
 
-    private final ProductoRepository productoRepository;
-    
+    // Adaptador que implementa ProductoRepository
     @Bean
-    public CreateProductoUseCase createProductoUseCase() {
+    public ProductoRepository productoRepository() {
+        return new ProductoJpaRepositoryImpl(productoEntityRepository);
+    }
+
+    // --- Use Cases ---
+
+    @Bean
+    public CreateProductoUseCase createProductoUseCase(ProductoRepository productoRepository) {
         return new CreateProductoUseCase(productoRepository);
     }
-    @Bean
-    public CreateProductoService createProductoService(){
-        return new CreateProductoService(createProductoUseCase());
-    }
 
     @Bean
-    public FindProductoUseCase findProductoUseCase(){
+    public FindProductoUseCase findProductoUseCase(ProductoRepository productoRepository) {
         return new FindProductoUseCase(productoRepository);
     }
 
     @Bean
-    public FindProductoService findProductoService(){
-        return new FindProductoService(findProductoUseCase());
-    }
-
-    @Bean
-    public DeleteProductoUseCase deleteProductoUseCase(){
+    public DeleteProductoUseCase deleteProductoUseCase(ProductoRepository productoRepository) {
         return new DeleteProductoUseCase(productoRepository);
     }
+
     @Bean
-    public DeleteProductoService deleteProductoService(){
-        return new DeleteProductoService(deleteProductoUseCase());
+    public EditProductoUseCase editProductoUseCase(ProductoRepository productoRepository) {
+        return new EditProductoUseCase(productoRepository);
+    }
+
+    // --- Services ---
+
+    @Bean
+    public CreateProductoService createProductoService(CreateProductoUseCase createProductoUseCase) {
+        return new CreateProductoService(createProductoUseCase);
     }
 
     @Bean
-    public EditProductoUseCase editProductoUseCase() {
-        return new EditProductoUseCase(productoRepository);
+    public FindProductoService findProductoService(FindProductoUseCase findProductoUseCase) {
+        return new FindProductoService(findProductoUseCase);
     }
-    
+
     @Bean
-    public EditProductoService editProductoService(){
-        return new EditProductoService(editProductoUseCase());
+    public DeleteProductoService deleteProductoService(DeleteProductoUseCase deleteProductoUseCase) {
+        return new DeleteProductoService(deleteProductoUseCase);
+    }
+
+    @Bean
+    public EditProductoService editProductoService(EditProductoUseCase editProductoUseCase) {
+        return new EditProductoService(editProductoUseCase);
     }
 }

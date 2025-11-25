@@ -9,8 +9,8 @@ import es.etg.daw.dawes.java.rest.restfull.productos.domain.model.Producto;
 import es.etg.daw.dawes.java.rest.restfull.productos.domain.model.ProductoId;
 
 public class ProductoFactory {
-    
-    public static final Map<ProductoId, Producto> getDemoData(){
+
+    public static final Map<ProductoId, Producto> getDemoData() {
         Map<ProductoId, Producto> datos = new LinkedHashMap<>();
 
         datos.put(new ProductoId(1), new Producto(new ProductoId(1), "Nombre producto 1", 1.01, LocalDateTime.now(), new CategoriaId(1)));
@@ -20,4 +20,15 @@ public class ProductoFactory {
 
         return datos;
     }
+
+    public static Producto create() {
+        return new Producto(
+                new ProductoId(1), // asignamos un ID fijo
+                "Productodeprueba",
+                9.99,
+                LocalDateTime.now(),
+                new CategoriaId(1)
+        );
+    }
+
 }

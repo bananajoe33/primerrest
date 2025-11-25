@@ -20,42 +20,45 @@ public class CategoriaConfig {
     
     private final CategoriaRepository categoriaRepository;
 
+    // --- Use Cases ---
     @Bean
-    public CreateCategoriaUseCase createCategoriaUseCase() {
+    public CreateCategoriaUseCase createCategoriaUseCase(CategoriaRepository categoriaRepository) {
         return new CreateCategoriaUseCase(categoriaRepository);
     }
 
     @Bean
-    public CreateCategoriaService createCategoriaService(){
-        return new CreateCategoriaService(createCategoriaUseCase());
-    }
-
-    @Bean
-    public FindCategoriaUseCase findCategoriaUseCase(){
+    public FindCategoriaUseCase findCategoriaUseCase(CategoriaRepository categoriaRepository) {
         return new FindCategoriaUseCase(categoriaRepository);
     }
 
     @Bean
-    public FindCategoriaService findCategoriaService(){
-        return new FindCategoriaService(findCategoriaUseCase());
-    }
-
-    @Bean
-    public DeleteCategoriaUseCase deleteCategoriaUseCase(){
+    public DeleteCategoriaUseCase deleteCategoriaUseCase(CategoriaRepository categoriaRepository) {
         return new DeleteCategoriaUseCase(categoriaRepository);
     }
+
     @Bean
-    public DeleteCategoriaService deleteCategoriaService(){
-        return new DeleteCategoriaService(deleteCategoriaUseCase());
+    public EditCategoriaUseCase editCategoriaUseCase(CategoriaRepository categoriaRepository) {
+        return new EditCategoriaUseCase(categoriaRepository);
+    }
+
+    // --- Services ---
+    @Bean
+    public CreateCategoriaService createCategoriaService(CreateCategoriaUseCase createCategoriaUseCase) {
+        return new CreateCategoriaService(createCategoriaUseCase);
     }
 
     @Bean
-    public EditCategoriaUseCase editCategoriaUseCase() {
-        return new EditCategoriaUseCase(categoriaRepository);
+    public FindCategoriaService findCategoriaService(FindCategoriaUseCase findCategoriaUseCase) {
+        return new FindCategoriaService(findCategoriaUseCase);
     }
-    
+
     @Bean
-    public EditCategoriaService editCategoriaService(){
-        return new EditCategoriaService(editCategoriaUseCase());
-    }    
+    public DeleteCategoriaService deleteCategoriaService(DeleteCategoriaUseCase deleteCategoriaUseCase) {
+        return new DeleteCategoriaService(deleteCategoriaUseCase);
+    }
+
+    @Bean
+    public EditCategoriaService editCategoriaService(EditCategoriaUseCase editCategoriaUseCase) {
+        return new EditCategoriaService(editCategoriaUseCase);
+    }
 }

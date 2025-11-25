@@ -17,6 +17,7 @@ public class CreateProductoUseCase {
         Producto producto = Producto.builder() // Se puede usar comando.id y no getId por usar @Accessors(fluent = true) la clase CreateProductoCommand 
                                     .nombre(comando.nombre())
                                     .precio(comando.precio())
+                                    .categoria(comando.categoriaId())
                                     .createdAt(LocalDateTime.now()).build();
 
         productoRepository.save(producto);
