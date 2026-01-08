@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import es.etg.daw.dawes.java.rest.restfull.productos.application.command.categoria.CreateCategoriaCommand;
 import es.etg.daw.dawes.java.rest.restfull.productos.application.command.categoria.EditCategoriaCommand;
@@ -38,45 +40,56 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CategoriaController {
 
+    @Value("${api.version}")
+    private String apiVersion;
+
     private final CreateCategoriaService createCategoriaService;
-
     private final FindCategoriaService findCategoriaService;
-
     private final DeleteCategoriaService deleteCategoriaService;
-
     private final EditCategoriaService editCategoriaService;
 
-    @PostMapping // Método POST
-    public ResponseEntity<CategoriaResponse> createCategoria(
-            // Indicamos que valide los datos de la request
-            @Valid
-            @RequestBody CategoriaRequest categoriaRequest) {
+    
+    private void validarVersion() {
+        if (!"1.0".equals(apiVersion)) {
+            throw new ResponseStatusException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Versión del API incorrecta"
+            );
+        }
+    }
 
+    @PostMapping
+    public ResponseEntity<CategoriaResponse> createCategoria(
+            @Valid @RequestBody CategoriaRequest categoriaRequest) {
+        validarVersion(); // Validación de versión
         CreateCategoriaCommand comando = CategoriaMapper.toCommand(categoriaRequest);
         Categoria categoria = createCategoriaService.createCategoria(comando);
-        return ResponseEntity.status(HttpStatus.CREATED).body(CategoriaMapper.toResponse(categoria)); // Respuesta
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(CategoriaMapper.toResponse(categoria));
     }
 
     @GetMapping
     public List<CategoriaResponse> allCategorias() {
-
+        validarVersion(); // Validación de versión
         return findCategoriaService.findAll()
-                .stream() // Convierte la lista en un flujo
-                .map(CategoriaMapper::toResponse) // Mapeamos cada elemento en un DTO de respuesta
-                .toList(); // Lo devuelve como una lista
+                .stream()
+                .map(CategoriaMapper::toResponse)
+                .toList();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategoria(@PathVariable int id) {
-        deleteCategoriaService.delete(new CategoriaId(id)); // Convertimos id en CategoriaId
+        validarVersion(); // Validación de versión
+        deleteCategoriaService.delete(new CategoriaId(id));
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
     public CategoriaResponse editCategoria(@PathVariable int id, @RequestBody CategoriaRequest categoriaRequest) {
+        validarVersion(); // Validación de versión
         EditCategoriaCommand comando = CategoriaMapper.toCommand(id, categoriaRequest);
         Categoria categoria = editCategoriaService.update(comando);
-        return CategoriaMapper.toResponse(categoria); // Respuesta
+        return CategoriaMapper.toResponse(categoria);
     }
 
     // Manejo de errores de validación
