@@ -30,69 +30,108 @@ import es.etg.daw.dawes.java.rest.restfull.productos.domain.model.ProductoId;
 import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.mapper.ProductoMapper;
 import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.web.dto.ProductoRequest;
 import es.etg.daw.dawes.java.rest.restfull.productos.infraestructure.web.dto.ProductoResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/productos") //La url será /productos
+@RequestMapping("/productos")
 @RequiredArgsConstructor
-
+@Tag(
+    name = "Productos",
+    description = "Operaciones relacionadas con la gestión de productos"
+)
 public class ProductoController {
 
     private final CreateProductoService createProductoService;
-
     private final FindProductoService findProductoService;
-
     private final DeleteProductoService deleteProductoService;
-
     private final EditProductoService editProductoService;
 
-    @PostMapping //Método Post
+    @PostMapping
+    @Operation(
+        summary = "Crea un producto",
+        description = "Crea un nuevo producto en la base de datos"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Producto creado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos")
+    })
     public ResponseEntity<ProductoResponse> createProducto(
-            // Indicamos que valide los datos de la request
-            @Valid
-            @RequestBody ProductoRequest productoRequest) {
+            @Valid @RequestBody ProductoRequest productoRequest) {
+
         CreateProductoCommand comando = ProductoMapper.toCommand(productoRequest);
         Producto producto = createProductoService.createProducto(comando);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ProductoMapper.toResponse(producto)); //Respuesta
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ProductoMapper.toResponse(producto));
     }
 
     @GetMapping
+    @Operation(
+        summary = "Obtiene el listado de productos",
+        description = "Busca en la base de datos todos los productos y sus detalles"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Listado de productos generado"),
+        @ApiResponse(responseCode = "404", description = "No hay productos en la base de datos")
+    })
     public List<ProductoResponse> allProductos() {
-
         return findProductoService.findAll()
-                .stream() //Convierte la lista en un flujo
-                .map(ProductoMapper::toResponse) //Mapeamos/Convertimos cada elemento del flujo (Producto) en un objeto de Respuesta (ProductoResponse)
-                .toList(); //Lo devuelve como una lista.
-
+                .stream()
+                .map(ProductoMapper::toResponse)
+                .toList();
     }
 
     @DeleteMapping("/{id}")
+    @Operation(
+        summary = "Elimina un producto",
+        description = "Elimina un producto a partir de su identificador"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Producto eliminado correctamente"),
+        @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
     public ResponseEntity<?> deleteProducto(@PathVariable int id) {
-        deleteProductoService.delete(new ProductoId(id)); //convertimos id en ProductoId
+        deleteProductoService.delete(new ProductoId(id));
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ProductoResponse editProducto(@PathVariable int id, @RequestBody ProductoRequest productoRequest) {
+    @Operation(
+        summary = "Actualiza un producto",
+        description = "Actualiza los datos de un producto existente"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Producto actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+        @ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
+    public ProductoResponse editProducto(
+            @PathVariable int id,
+            @RequestBody ProductoRequest productoRequest) {
+
         EditProductoCommand comando = ProductoMapper.toCommand(id, productoRequest);
         Producto producto = editProductoService.update(comando);
-        return ProductoMapper.toResponse(producto); //Respuesta
+        return ProductoMapper.toResponse(producto);
     }
 
-    // Método que captura los errores y devuelve un mapa con el campo que no cumple la validación y un mensaje de error.
+    // Manejo de errores de validación
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public Map<String, String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
+        ex.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
         return errors;
     }
-
-    
-
 }
